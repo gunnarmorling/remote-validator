@@ -1,5 +1,6 @@
 package org.hibernate.validator.remote.sample;
 
+import org.hibernate.validator.remote.metamodel.RemoteMetamodelServlet;
 import org.hibernate.validator.remote.validator.RemoteValidationServlet;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -23,5 +24,6 @@ public class App implements ServletContextInitializer
     @Override
     public void onStartup(ServletContext servletContext) throws ServletException {
         RemoteValidationServlet.register(servletContext);
+        RemoteMetamodelServlet.register(servletContext);
     }
 }

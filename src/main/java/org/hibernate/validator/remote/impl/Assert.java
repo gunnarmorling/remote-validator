@@ -7,7 +7,6 @@ public class Assert {
     private static final String NOT_NULL_MSG_FORMAT = "Argument '%s' may not be null";
     private static final String NOT_EMPTY_MSG_FORMAT = "Argument '%s' may not be empty";
 
-
     public static <T> T requireNonNull(T value, String argumentName) {
         Objects.requireNonNull(argumentName, String.format(NOT_NULL_MSG_FORMAT, "argumentName"));
 
