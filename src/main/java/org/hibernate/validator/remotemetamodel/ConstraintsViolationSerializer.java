@@ -47,7 +47,7 @@ public class ConstraintsViolationSerializer implements JsonSerializer<Constraint
 
     private String getTypeName(final Class<? extends Annotation> annotationClass) {
         Assert.requireNonNull(annotationClass, "annotationClass");
-        Map<Class<? extends Annotation>, String> mapping =  configuration.getContraintsAnnotationMapping();
+        Map<Class<? extends Annotation>, String> mapping =  configuration.getConstraintAnnotationMapping();
         Assert.requireNonNull(mapping, "mapping");
         if(mapping.containsKey(annotationClass)) {
             return mapping.get(annotationClass);

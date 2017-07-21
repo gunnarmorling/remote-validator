@@ -10,7 +10,6 @@ import java.util.Map;
  */
 public class ValidationConfiguration {
 
-
     public boolean addViolationMessageToResponse() {
         return true;
     }
@@ -19,7 +18,7 @@ public class ValidationConfiguration {
         return true;
     }
 
-    public Map<Class<? extends Annotation>, String> getContraintsAnnotationMapping() {
+    public Map<Class<? extends Annotation>, String> getConstraintAnnotationMapping() {
         return Collections.emptyMap();
     }
 

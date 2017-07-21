@@ -18,6 +18,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.ConstraintViolation;
+import javax.validation.Validator;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
@@ -38,14 +39,19 @@ public class RemoteMetamodelServlet extends HttpServlet {
         this(new RemoteValidator(), new ValidationConfiguration());
     }
 
+    public RemoteMetamodelServlet(final ValidationConfiguration configuration, final Validator validator, final ClassLoader classLoader) {
+        this(new RemoteValidator(configuration, validator, classLoader), configuration);
+    }
+
     public RemoteMetamodelServlet(final RemoteValidator remoteValidator, final ValidationConfiguration configuration) {
         this.remoteValidator = remoteValidator;
         this.gson = new GsonBuilder().registerTypeHierarchyAdapter(ConstraintViolation.class, new ConstraintsViolationSerializer(configuration)).create();
     }
 
-    @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
+
+    @Override
+    protected void doPost(final HttpServletRequest request, final HttpServletResponse response) throws ServletException, IOException {
         response.setHeader(CONTENT_TYPE_HEADER_NAME, JSON_CONTENT_TYPE);
         response.setCharacterEncoding(UTF_8);
 
@@ -65,16 +71,9 @@ public class RemoteMetamodelServlet extends HttpServlet {
          * }
          */
 
-        String line;
-        final StringBuilder requestPayload = new StringBuilder();
-
-        while ((line = request.getReader().readLine()) != null) {
-            requestPayload.append(line);
-        }
-
+        final String payload = readPayload(request);
         try {
-
-            final JsonObject requestJson = getAsJsonObject(requestPayload);
+            final JsonObject requestJson = getAsJsonObject(payload);
             final String typeName = getType(requestJson);
 
             final JsonObject properties = requestJson.get(INSTANCE_PROPERTY_NAME).getAsJsonObject();
@@ -101,9 +100,15 @@ public class RemoteMetamodelServlet extends HttpServlet {
         }
     }
 
-    private String getType(JsonObject requestJson) throws InvalidJsonException {
+    private String readPayload(final HttpServletRequest request) throws IOException {
+        Assert.requireNonNull(request, "request");
+        return request.getReader().lines().reduce("", (l1, l2) -> l1 + l2);
+    }
+
+    private String getType(final JsonObject jsonObject) throws InvalidJsonException {
+        Assert.requireNonNull(jsonObject, "jsonObject");
         try {
-            return requestJson
+            return jsonObject
                     .get(TYPE_PROPERTY_NAME)
                     .getAsJsonObject()
                     .get(IDENTIFIER_PROPERTY_NAME)
@@ -113,15 +118,17 @@ public class RemoteMetamodelServlet extends HttpServlet {
         }
     }
 
-    private JsonObject getAsJsonObject(StringBuilder requestPayload) throws InvalidJsonException {
+    private JsonObject getAsJsonObject(final String requestPayload) throws InvalidJsonException {
+        Assert.requireNonNull(requestPayload, "requestPayload");
         try {
-            return new JsonParser().parse(requestPayload.toString()).getAsJsonObject();
+            return new JsonParser().parse(requestPayload).getAsJsonObject();
         } catch (Exception e) {
             throw new InvalidJsonException("Can not parse JSON", e);
         }
     }
 
     private Set<ConstraintViolation<?>> validate(final String typeName, final String propertyName, final JsonElement propertyElement) {
+        Assert.requireNonNull(propertyElement, "propertyElement");
         if (!propertyElement.isJsonPrimitive() && !propertyElement.isJsonNull()) {
             throw new IllegalArgumentException("Only primitive or null properties supported. Wrong type for " + typeName + "." + propertyName);
         }
