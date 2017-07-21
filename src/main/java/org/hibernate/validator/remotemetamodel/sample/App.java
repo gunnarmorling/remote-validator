@@ -22,6 +22,6 @@ public class App implements ServletContextInitializer
 
     @Override
     public void onStartup(ServletContext servletContext) throws ServletException {
-        servletContext.addServlet("val", new RemoteValidationServlet()).addMapping("/validate");
+        RemoteValidationServlet.register(servletContext);
     }
 }

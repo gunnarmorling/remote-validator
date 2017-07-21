@@ -1,4 +1,4 @@
-package org.hibernate.validator.remotemetamodel;
+package org.hibernate.validator.remotemetamodel.impl;
 
 /**
  * @author Gunnar Morling

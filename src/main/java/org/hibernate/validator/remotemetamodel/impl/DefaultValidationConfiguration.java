@@ -1,4 +1,6 @@
-package org.hibernate.validator.remotemetamodel;
+package org.hibernate.validator.remotemetamodel.impl;
+
+import org.hibernate.validator.remotemetamodel.ValidationConfiguration;
 
 import java.lang.annotation.Annotation;
 import java.util.Collections;

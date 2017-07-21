@@ -12,7 +12,13 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonPrimitive;
+import org.hibernate.validator.remotemetamodel.impl.Assert;
+import org.hibernate.validator.remotemetamodel.impl.ConstraintsViolationSerializer;
+import org.hibernate.validator.remotemetamodel.impl.DefaultValidationConfiguration;
+import org.hibernate.validator.remotemetamodel.impl.InvalidJsonException;
+import org.hibernate.validator.remotemetamodel.impl.RemoteValidator;
 
+import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -25,7 +31,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-import static org.hibernate.validator.remotemetamodel.RemoteValidatorConstants.*;
+import static org.hibernate.validator.remotemetamodel.impl.RemoteValidatorConstants.*;
 
 /**
  * @author Gunnar Morling
@@ -126,5 +132,16 @@ public class RemoteValidationServlet extends HttpServlet {
             return remoteValidator.validateValue(typeName, propertyName, primitiveValue.getAsString());
         }
         throw new IllegalArgumentException("Not supported type for " + typeName + "." + propertyName);
+    }
+
+    public static void register(final ServletContext servletContext) {
+        register(servletContext, "/validate");
+    }
+
+    public static void register(final ServletContext servletContext, final String mapping) {
+        Assert.requireNonNull(servletContext, "servletContext");
+        Assert.requireNonBlank(mapping, "mapping");
+
+        servletContext.addServlet("remoteValidationServlet", new RemoteValidationServlet()).addMapping(mapping);
     }
 }
