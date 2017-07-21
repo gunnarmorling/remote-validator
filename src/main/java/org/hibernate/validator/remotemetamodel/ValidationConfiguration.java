@@ -1,28 +1,19 @@
 package org.hibernate.validator.remotemetamodel;
 
 import java.lang.annotation.Annotation;
-import java.util.Collections;
 import java.util.Map;
 
 /**
  * @author Gunnar Morling
  * @author Hendrik Ebbers
  */
-public class ValidationConfiguration {
+public interface ValidationConfiguration {
 
-    public boolean addViolationMessageToResponse() {
-        return true;
-    }
+    boolean addViolationMessageToResponse();
 
-    public boolean addViolationMessageTemplateToResponse() {
-        return true;
-    }
+    boolean addViolationMessageTemplateToResponse();
 
-    public Map<Class<? extends Annotation>, String> getConstraintAnnotationMapping() {
-        return Collections.emptyMap();
-    }
+    Map<Class<? extends Annotation>, String> getConstraintAnnotationMapping();
 
-    public Map<String, Class<?>> getTypeMapping() {
-        return Collections.emptyMap();
-    }
+    Map<String, Class<?>> getTypeMapping();
 }

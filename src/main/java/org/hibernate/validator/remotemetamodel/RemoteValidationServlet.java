@@ -37,7 +37,7 @@ public class RemoteValidationServlet extends HttpServlet {
     private final Gson gson;
 
     public RemoteValidationServlet() {
-        this(new ValidationConfiguration(), Validation.buildDefaultValidatorFactory().getValidator());
+        this(new DefaultValidationConfiguration(), Validation.buildDefaultValidatorFactory().getValidator());
     }
 
     public RemoteValidationServlet(final ValidationConfiguration configuration, final Validator validator) {

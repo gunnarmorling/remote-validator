@@ -23,10 +23,6 @@ public class ConstraintsViolationSerializer implements JsonSerializer<Constraint
 
     private final ValidationConfiguration configuration;
 
-    public ConstraintsViolationSerializer() {
-        this(new ValidationConfiguration());
-    }
-
     public ConstraintsViolationSerializer(final ValidationConfiguration configuration) {
         this.configuration = Assert.requireNonNull(configuration, "configuration");
     }
