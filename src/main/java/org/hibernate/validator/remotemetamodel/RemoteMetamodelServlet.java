@@ -34,12 +34,12 @@ public class RemoteMetamodelServlet extends HttpServlet {
 	private final Gson gson;
 
 	public RemoteMetamodelServlet() {
-		this(new RemoteValidator());
+		this(new RemoteValidator(), new ValidationConfiguration());
 	}
 
-	public RemoteMetamodelServlet(final RemoteValidator remoteValidator) {
+	public RemoteMetamodelServlet(final RemoteValidator remoteValidator, final ValidationConfiguration configuration) {
 		this.remoteValidator = remoteValidator;
-		this.gson = new GsonBuilder().registerTypeHierarchyAdapter(ConstraintViolation.class, new ConstraintsViolationSerializer()).create();
+		this.gson = new GsonBuilder().registerTypeHierarchyAdapter(ConstraintViolation.class, new ConstraintsViolationSerializer(configuration)).create();
 	}
 
 	@Override

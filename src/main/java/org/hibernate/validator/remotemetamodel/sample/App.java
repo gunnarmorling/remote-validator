@@ -1,5 +1,6 @@
-package org.hibernate.validator.remotemetamodel;
+package org.hibernate.validator.remotemetamodel.sample;
 
+import org.hibernate.validator.remotemetamodel.RemoteMetamodelServlet;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.web.servlet.ServletContextInitializer;
