@@ -25,6 +25,7 @@ import java.util.Set;
 
 /**
  * @author Gunnar Morling
+ * @author Hendrik Ebbers
  *
  */
 public class RemoteMetamodelServlet extends HttpServlet {
@@ -36,7 +37,7 @@ public class RemoteMetamodelServlet extends HttpServlet {
 		this(new RemoteValidator());
 	}
 
-	public RemoteMetamodelServlet(RemoteValidator remoteValidator) {
+	public RemoteMetamodelServlet(final RemoteValidator remoteValidator) {
 		this.remoteValidator = remoteValidator;
 		this.gson = new GsonBuilder().registerTypeHierarchyAdapter(ConstraintViolation.class, new ConstraintsViolationSerializer()).create();
 	}
@@ -64,25 +65,25 @@ public class RemoteMetamodelServlet extends HttpServlet {
 		 */
 
 		String line;
-		StringBuilder requestPayload = new StringBuilder();
+		final StringBuilder requestPayload = new StringBuilder();
 
 		while( (line = request.getReader().readLine()) != null ) {
 			requestPayload.append( line );
 		}
 
-		JsonObject requestJson = new JsonParser().parse( requestPayload.toString() ).getAsJsonObject();
+		final JsonObject requestJson = new JsonParser().parse( requestPayload.toString() ).getAsJsonObject();
 
-		String typeName = requestJson
+		final String typeName = requestJson
 				.get( "type" )
 				.getAsJsonObject()
 				.get( "name" )
 				.getAsString();
 
-		JsonObject properties = requestJson.get( "instance" ).getAsJsonObject();
-		Map<String, Set<ConstraintViolation<?>>> violationsByProperty = new HashMap<>();
+		final JsonObject properties = requestJson.get( "instance" ).getAsJsonObject();
+		final Map<String, Set<ConstraintViolation<?>>> violationsByProperty = new HashMap<>();
 
 		for ( String property : properties.keySet() ) {
-			JsonElement propertyValue = properties.get( property );
+			final JsonElement propertyValue = properties.get( property );
 
 			if ( !propertyValue.isJsonPrimitive() ) {
 				response.setStatus( 400 );
@@ -101,7 +102,7 @@ public class RemoteMetamodelServlet extends HttpServlet {
 			}
 		}
 
-		String responseString = gson.toJson( violationsByProperty );
+		final String responseString = gson.toJson( violationsByProperty );
 		response.getWriter().append( responseString );
 	}
 }

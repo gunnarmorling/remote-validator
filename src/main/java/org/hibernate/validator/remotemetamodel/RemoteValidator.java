@@ -6,38 +6,39 @@
  */
 package org.hibernate.validator.remotemetamodel;
 
-import java.util.Set;
-
 import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
 import javax.validation.Validator;
+import java.util.Set;
 
 /**
  * @author Gunnar Morling
- *
+ * @author Hendrik Ebbers
  */
 public class RemoteValidator {
 
-	private final Validator validator;
-	private final ClassLoader classLoader;
+    private final Validator validator;
+    private final ClassLoader classLoader;
 
-	public RemoteValidator() {
-		validator = Validation.buildDefaultValidatorFactory()
-				.getValidator();
+    public RemoteValidator() {
+        this(Validation.buildDefaultValidatorFactory()
+                .getValidator(), RemoteValidator.class.getClassLoader());
+    }
 
-		classLoader = RemoteValidator.class.getClassLoader();
-	}
+    public RemoteValidator(final Validator validator, final ClassLoader classLoader) {
+        this.validator = Assert.requireNonNull(validator, "validator");
+        this.classLoader = Assert.requireNonNull(classLoader, "classLoader");
+    }
 
-	public Set<ConstraintViolation<?>> validateValue(String typeName, String property, Object value) {
-		Class clazz;
-
-		try {
-			clazz = classLoader.loadClass( typeName );
-		}
-		catch (ClassNotFoundException e) {
-			throw new RuntimeException( e );
-		}
-
-		return validator.validateValue( clazz, property, value );
-	}
+    public Set<ConstraintViolation<?>> validateValue(final String typeName, final String property, final Object value) {
+        Assert.requireNonNull(typeName, "typeName");
+        Assert.requireNonNull(property, "property");
+        Class clazz;
+        try {
+            clazz = classLoader.loadClass(typeName);
+        } catch (ClassNotFoundException e) {
+            throw new RuntimeException("Can not find class for type " + typeName, e);
+        }
+        return validator.validateValue(clazz, property, value);
+    }
 }
