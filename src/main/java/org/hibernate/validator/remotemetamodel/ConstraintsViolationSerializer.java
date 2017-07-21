@@ -8,6 +8,7 @@ import com.google.gson.JsonSerializer;
 import javax.validation.ConstraintViolation;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
+import java.util.Map;
 
 /**
  * @author Gunnar Morling
@@ -42,6 +43,11 @@ public class ConstraintsViolationSerializer implements JsonSerializer<Constraint
 
     private String getTypeName(final Class<? extends Annotation> annotationClass) {
         Assert.requireNonNull(annotationClass, "annotationClass");
+        Map<Class<? extends Annotation>, String> mapping =  configuration.getContraintsAnnotationMapping();
+        Assert.requireNonNull(mapping, "mapping");
+        if(mapping.containsKey(annotationClass)) {
+            return mapping.get(annotationClass);
+        }
         return annotationClass.getSimpleName();
     }
 }
