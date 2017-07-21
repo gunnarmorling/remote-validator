@@ -18,7 +18,7 @@ public class DefaultValidationConfiguration implements ValidationConfiguration {
 
     @Override
     public boolean addViolationMessageTemplateToResponse() {
-        return true;
+        return false;
     }
 
     @Override
