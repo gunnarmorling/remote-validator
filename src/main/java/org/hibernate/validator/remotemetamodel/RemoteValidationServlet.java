@@ -31,20 +31,20 @@ import static org.hibernate.validator.remotemetamodel.RemoteValidatorConstants.*
  * @author Gunnar Morling
  * @author Hendrik Ebbers
  */
-public class RemoteMetamodelServlet extends HttpServlet {
+public class RemoteValidationServlet extends HttpServlet {
 
     private final RemoteValidator remoteValidator;
     private final Gson gson;
 
-    public RemoteMetamodelServlet() {
+    public RemoteValidationServlet() {
         this(new ValidationConfiguration(), Validation.buildDefaultValidatorFactory().getValidator());
     }
 
-    public RemoteMetamodelServlet(final ValidationConfiguration configuration, final Validator validator) {
-        this(configuration, validator, RemoteMetamodelServlet.class.getClassLoader());
+    public RemoteValidationServlet(final ValidationConfiguration configuration, final Validator validator) {
+        this(configuration, validator, RemoteValidationServlet.class.getClassLoader());
     }
 
-    public RemoteMetamodelServlet(final ValidationConfiguration configuration, final Validator validator, final ClassLoader classLoader) {
+    public RemoteValidationServlet(final ValidationConfiguration configuration, final Validator validator, final ClassLoader classLoader) {
         this.remoteValidator = new RemoteValidator(configuration, validator, classLoader);
         this.gson = new GsonBuilder().registerTypeHierarchyAdapter(ConstraintViolation.class, new ConstraintsViolationSerializer(configuration)).create();
     }

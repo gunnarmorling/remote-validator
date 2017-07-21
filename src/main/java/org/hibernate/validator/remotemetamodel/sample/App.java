@@ -1,6 +1,6 @@
 package org.hibernate.validator.remotemetamodel.sample;
 
-import org.hibernate.validator.remotemetamodel.RemoteMetamodelServlet;
+import org.hibernate.validator.remotemetamodel.RemoteValidationServlet;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.web.servlet.ServletContextInitializer;
@@ -22,6 +22,6 @@ public class App implements ServletContextInitializer
 
     @Override
     public void onStartup(ServletContext servletContext) throws ServletException {
-        servletContext.addServlet("val", new RemoteMetamodelServlet()).addMapping("/validate");
+        servletContext.addServlet("val", new RemoteValidationServlet()).addMapping("/validate");
     }
 }
