@@ -5,7 +5,8 @@ import java.util.Collections;
 import java.util.Map;
 
 /**
- * Created by hendrikebbers on 21.07.17.
+ * @author Gunnar Morling
+ * @author Hendrik Ebbers
  */
 public class ValidationConfiguration {
 
@@ -19,6 +20,10 @@ public class ValidationConfiguration {
     }
 
     public Map<Class<? extends Annotation>, String> getContraintsAnnotationMapping() {
+        return Collections.emptyMap();
+    }
+
+    public Map<String, Class<?>> getTypeMapping() {
         return Collections.emptyMap();
     }
 }

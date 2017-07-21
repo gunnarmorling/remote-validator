@@ -10,6 +10,10 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.util.Map;
 
+import static org.hibernate.validator.remotemetamodel.RemoteValidatorConstants.MESSAGE_PROPERTY_NAME;
+import static org.hibernate.validator.remotemetamodel.RemoteValidatorConstants.TEMPLATE_PROPERTY_NAME;
+import static org.hibernate.validator.remotemetamodel.RemoteValidatorConstants.TYPE_PROPERTY_NAME;
+
 /**
  * @author Gunnar Morling
  * @author Hendrik Ebbers
@@ -31,12 +35,12 @@ public class ConstraintsViolationSerializer implements JsonSerializer<Constraint
     public JsonElement serialize(final ConstraintViolation<?> constraintViolation, final Type type, final JsonSerializationContext jsonSerializationContext) {
         Assert.requireNonNull(constraintViolation, "constraintViolation");
         final JsonObject root = new JsonObject();
-        root.addProperty("type", getTypeName(constraintViolation.getConstraintDescriptor().getAnnotation().annotationType()));
+        root.addProperty(TYPE_PROPERTY_NAME, getTypeName(constraintViolation.getConstraintDescriptor().getAnnotation().annotationType()));
         if(configuration.addViolationMessageToResponse()) {
-            root.addProperty("message", constraintViolation.getMessage());
+            root.addProperty(MESSAGE_PROPERTY_NAME, constraintViolation.getMessage());
         }
         if(configuration.addViolationMessageTemplateToResponse()) {
-            root.addProperty("messageTemplate", constraintViolation.getMessageTemplate());
+            root.addProperty(TEMPLATE_PROPERTY_NAME, constraintViolation.getMessageTemplate());
         }
         return root;
     }

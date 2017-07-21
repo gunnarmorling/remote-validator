@@ -9,6 +9,7 @@ package org.hibernate.validator.remotemetamodel;
 import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
 import javax.validation.Validator;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -19,13 +20,15 @@ public class RemoteValidator {
 
     private final Validator validator;
     private final ClassLoader classLoader;
+    private final ValidationConfiguration configuration;
 
     public RemoteValidator() {
-        this(Validation.buildDefaultValidatorFactory()
+        this(new ValidationConfiguration(), Validation.buildDefaultValidatorFactory()
                 .getValidator(), RemoteValidator.class.getClassLoader());
     }
 
-    public RemoteValidator(final Validator validator, final ClassLoader classLoader) {
+    public RemoteValidator(final ValidationConfiguration configuration, final Validator validator, final ClassLoader classLoader) {
+        this.configuration = Assert.requireNonNull(configuration, "configuration");
         this.validator = Assert.requireNonNull(validator, "validator");
         this.classLoader = Assert.requireNonNull(classLoader, "classLoader");
     }
@@ -33,12 +36,23 @@ public class RemoteValidator {
     public Set<ConstraintViolation<?>> validateValue(final String typeName, final String property, final Object value) {
         Assert.requireNonNull(typeName, "typeName");
         Assert.requireNonNull(property, "property");
-        Class clazz;
-        try {
-            clazz = classLoader.loadClass(typeName);
-        } catch (ClassNotFoundException e) {
-            throw new RuntimeException("Can not find class for type " + typeName, e);
+        return validator.validateValue((Class)getClassForType(typeName), property, value);
+    }
+
+    private Class<?> getClassForType(final String typeName) {
+        Assert.requireNonNull(typeName, "typeName");
+        Map<String, Class<?>> mapping = configuration.getTypeMapping();
+        if(mapping.containsKey(typeName)) {
+            Class<?> cls = mapping.get(typeName);
+            if(cls == null) {
+                throw new IllegalStateException("null value specified for type " + typeName);
+            }
+            return cls;
         }
-        return validator.validateValue(clazz, property, value);
+        try {
+            return classLoader.loadClass(typeName);
+        } catch (ClassNotFoundException e) {
+            throw new IllegalArgumentException("Can not find class for type " + typeName, e);
+        }
     }
 }
