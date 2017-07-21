@@ -6,22 +6,22 @@
  */
 package org.hibernate.validator.remotemetamodel;
 
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import com.google.gson.JsonPrimitive;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.ConstraintViolation;
-
-import com.google.gson.Gson;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
-import com.google.gson.JsonPrimitive;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * @author Gunnar Morling
@@ -33,18 +33,16 @@ public class RemoteMetamodelServlet extends HttpServlet {
 	private final Gson gson;
 
 	public RemoteMetamodelServlet() {
-		remoteValidator = new RemoteValidator();
-		gson = new Gson();
+		this(new RemoteValidator());
 	}
 
-	public RemoteMetamodelServlet(RemoteValidator remoteValidator, Gson gson) {
+	public RemoteMetamodelServlet(RemoteValidator remoteValidator) {
 		this.remoteValidator = remoteValidator;
-		this.gson = gson;
+		this.gson = new GsonBuilder().registerTypeHierarchyAdapter(ConstraintViolation.class, new ConstraintsViolationSerializer()).create();
 	}
 
 	@Override
-	protected void doGet(HttpServletRequest req, HttpServletResponse response)
-			throws ServletException, IOException {
+	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
 		response.setHeader( "Content-Type", "application/json" );
 		response.setCharacterEncoding( "UTF-8" );
@@ -68,7 +66,7 @@ public class RemoteMetamodelServlet extends HttpServlet {
 		String line;
 		StringBuilder requestPayload = new StringBuilder();
 
-		while( (line = req.getReader().readLine()) != null ) {
+		while( (line = request.getReader().readLine()) != null ) {
 			requestPayload.append( line );
 		}
 

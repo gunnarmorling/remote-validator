@@ -1,13 +1,26 @@
 package org.hibernate.validator.remotemetamodel;
 
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.web.servlet.ServletContextInitializer;
+
+import javax.servlet.ServletContext;
+import javax.servlet.ServletException;
+
 /**
  * Hello world!
  *
  */
-public class App 
+@SpringBootApplication
+public class App implements ServletContextInitializer
 {
     public static void main( String[] args )
     {
-        System.out.println( "Hello World!" );
+        SpringApplication.run(App.class, args);
+    }
+
+    @Override
+    public void onStartup(ServletContext servletContext) throws ServletException {
+        servletContext.addServlet("val", new RemoteMetamodelServlet()).addMapping("/validate");
     }
 }
