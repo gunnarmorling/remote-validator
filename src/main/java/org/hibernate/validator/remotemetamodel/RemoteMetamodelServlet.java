@@ -18,6 +18,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.ConstraintViolation;
+import javax.validation.Validation;
 import javax.validation.Validator;
 import java.io.IOException;
 import java.util.HashMap;
@@ -36,41 +37,22 @@ public class RemoteMetamodelServlet extends HttpServlet {
     private final Gson gson;
 
     public RemoteMetamodelServlet() {
-        this(new RemoteValidator(), new ValidationConfiguration());
+        this(new ValidationConfiguration(), Validation.buildDefaultValidatorFactory().getValidator());
+    }
+
+    public RemoteMetamodelServlet(final ValidationConfiguration configuration, final Validator validator) {
+        this(configuration, validator, RemoteMetamodelServlet.class.getClassLoader());
     }
 
     public RemoteMetamodelServlet(final ValidationConfiguration configuration, final Validator validator, final ClassLoader classLoader) {
-        this(new RemoteValidator(configuration, validator, classLoader), configuration);
-    }
-
-    public RemoteMetamodelServlet(final RemoteValidator remoteValidator, final ValidationConfiguration configuration) {
-        this.remoteValidator = remoteValidator;
+        this.remoteValidator = new RemoteValidator(configuration, validator, classLoader);
         this.gson = new GsonBuilder().registerTypeHierarchyAdapter(ConstraintViolation.class, new ConstraintsViolationSerializer(configuration)).create();
     }
-
-
 
     @Override
     protected void doPost(final HttpServletRequest request, final HttpServletResponse response) throws ServletException, IOException {
         response.setHeader(CONTENT_TYPE_HEADER_NAME, JSON_CONTENT_TYPE);
         response.setCharacterEncoding(UTF_8);
-
-        /**
-         * {
-         * 		"config" : {
-         * 			"validate-absent-properties" : true,
-         * 			"validate-bean" : false
-         *        },
-         * 		"type": {
-         * 			"name" : "a.b.c.Class",
-         *        },
-         * 		"instance": {
-         * 			"id" : 123,
-         * 			"name" : "Hendrik"
-         *        }
-         * }
-         */
-
         final String payload = readPayload(request);
         try {
             final JsonObject requestJson = getAsJsonObject(payload);
@@ -132,7 +114,7 @@ public class RemoteMetamodelServlet extends HttpServlet {
         if (!propertyElement.isJsonPrimitive() && !propertyElement.isJsonNull()) {
             throw new IllegalArgumentException("Only primitive or null properties supported. Wrong type for " + typeName + "." + propertyName);
         }
-        if(propertyElement.isJsonNull()) {
+        if (propertyElement.isJsonNull()) {
             return remoteValidator.validateValue(typeName, propertyName, null);
         }
         JsonPrimitive primitiveValue = propertyElement.getAsJsonPrimitive();

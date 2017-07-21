@@ -7,7 +7,6 @@
 package org.hibernate.validator.remotemetamodel;
 
 import javax.validation.ConstraintViolation;
-import javax.validation.Validation;
 import javax.validation.Validator;
 import java.util.Map;
 import java.util.Set;
@@ -21,11 +20,6 @@ public class RemoteValidator {
     private final Validator validator;
     private final ClassLoader classLoader;
     private final ValidationConfiguration configuration;
-
-    public RemoteValidator() {
-        this(new ValidationConfiguration(), Validation.buildDefaultValidatorFactory()
-                .getValidator(), RemoteValidator.class.getClassLoader());
-    }
 
     public RemoteValidator(final ValidationConfiguration configuration, final Validator validator, final ClassLoader classLoader) {
         this.configuration = Assert.requireNonNull(configuration, "configuration");
