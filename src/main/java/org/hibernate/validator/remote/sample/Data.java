@@ -1,4 +1,4 @@
-package org.hibernate.validator.remotemetamodel.sample;
+package org.hibernate.validator.remote.sample;
 
 import javax.validation.constraints.Size;
 

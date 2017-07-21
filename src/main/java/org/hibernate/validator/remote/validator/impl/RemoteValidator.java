@@ -4,9 +4,10 @@
  * License: Apache License, Version 2.0
  * See the license.txt file in the root directory or <http://www.apache.org/licenses/LICENSE-2.0>.
  */
-package org.hibernate.validator.remotemetamodel.impl;
+package org.hibernate.validator.remote.validator.impl;
 
-import org.hibernate.validator.remotemetamodel.ValidationConfiguration;
+import org.hibernate.validator.remote.impl.Assert;
+import org.hibernate.validator.remote.validator.RemoteValidationConfiguration;
 
 import javax.validation.ConstraintViolation;
 import javax.validation.Validator;
@@ -21,9 +22,9 @@ public class RemoteValidator {
 
     private final Validator validator;
     private final ClassLoader classLoader;
-    private final ValidationConfiguration configuration;
+    private final RemoteValidationConfiguration configuration;
 
-    public RemoteValidator(final ValidationConfiguration configuration, final Validator validator, final ClassLoader classLoader) {
+    public RemoteValidator(final RemoteValidationConfiguration configuration, final Validator validator, final ClassLoader classLoader) {
         this.configuration = Assert.requireNonNull(configuration, "configuration");
         this.validator = Assert.requireNonNull(validator, "validator");
         this.classLoader = Assert.requireNonNull(classLoader, "classLoader");

@@ -1,10 +1,12 @@
-package org.hibernate.validator.remotemetamodel.impl;
+package org.hibernate.validator.remote.validator.impl;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
-import org.hibernate.validator.remotemetamodel.ValidationConfiguration;
+import org.hibernate.validator.remote.impl.Assert;
+import org.hibernate.validator.remote.impl.RemoteConstants;
+import org.hibernate.validator.remote.validator.RemoteValidationConfiguration;
 
 import javax.validation.ConstraintViolation;
 import java.lang.annotation.Annotation;
@@ -18,9 +20,9 @@ import java.util.Map;
  */
 public class ConstraintsViolationSerializer implements JsonSerializer<ConstraintViolation<?>> {
 
-    private final ValidationConfiguration configuration;
+    private final RemoteValidationConfiguration configuration;
 
-    public ConstraintsViolationSerializer(final ValidationConfiguration configuration) {
+    public ConstraintsViolationSerializer(final RemoteValidationConfiguration configuration) {
         this.configuration = Assert.requireNonNull(configuration, "configuration");
     }
 
@@ -28,12 +30,12 @@ public class ConstraintsViolationSerializer implements JsonSerializer<Constraint
     public JsonElement serialize(final ConstraintViolation<?> constraintViolation, final Type type, final JsonSerializationContext jsonSerializationContext) {
         Assert.requireNonNull(constraintViolation, "constraintViolation");
         final JsonObject root = new JsonObject();
-        root.addProperty(RemoteValidatorConstants.TYPE_PROPERTY_NAME, getTypeName(constraintViolation.getConstraintDescriptor().getAnnotation().annotationType()));
+        root.addProperty(RemoteConstants.TYPE_PROPERTY_NAME, getTypeName(constraintViolation.getConstraintDescriptor().getAnnotation().annotationType()));
         if(configuration.addViolationMessageToResponse()) {
-            root.addProperty(RemoteValidatorConstants.MESSAGE_PROPERTY_NAME, constraintViolation.getMessage());
+            root.addProperty(RemoteConstants.MESSAGE_PROPERTY_NAME, constraintViolation.getMessage());
         }
         if(configuration.addViolationMessageTemplateToResponse()) {
-            root.addProperty(RemoteValidatorConstants.TEMPLATE_PROPERTY_NAME, constraintViolation.getMessageTemplate());
+            root.addProperty(RemoteConstants.TEMPLATE_PROPERTY_NAME, constraintViolation.getMessageTemplate());
         }
         return root;
     }

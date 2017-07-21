@@ -1,4 +1,4 @@
-package org.hibernate.validator.remotemetamodel.impl;
+package org.hibernate.validator.remote.impl;
 
 import java.util.Objects;
 

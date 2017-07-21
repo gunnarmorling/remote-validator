@@ -1,10 +1,10 @@
-package org.hibernate.validator.remotemetamodel.impl;
+package org.hibernate.validator.remote.impl;
 
 /**
  * @author Gunnar Morling
  * @author Hendrik Ebbers
  */
-public interface RemoteValidatorConstants {
+public interface RemoteConstants {
 
     String INSTANCE_PROPERTY_NAME = "instance";
 

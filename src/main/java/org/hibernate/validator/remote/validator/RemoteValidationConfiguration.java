@@ -1,4 +1,4 @@
-package org.hibernate.validator.remotemetamodel;
+package org.hibernate.validator.remote.validator;
 
 import java.lang.annotation.Annotation;
 import java.util.Map;
@@ -7,7 +7,7 @@ import java.util.Map;
  * @author Gunnar Morling
  * @author Hendrik Ebbers
  */
-public interface ValidationConfiguration {
+public interface RemoteValidationConfiguration {
 
     boolean addViolationMessageToResponse();
 

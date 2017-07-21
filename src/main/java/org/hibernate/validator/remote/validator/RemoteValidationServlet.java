@@ -4,7 +4,7 @@
  * License: Apache License, Version 2.0
  * See the license.txt file in the root directory or <http://www.apache.org/licenses/LICENSE-2.0>.
  */
-package org.hibernate.validator.remotemetamodel;
+package org.hibernate.validator.remote.validator;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -12,11 +12,11 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonPrimitive;
-import org.hibernate.validator.remotemetamodel.impl.Assert;
-import org.hibernate.validator.remotemetamodel.impl.ConstraintsViolationSerializer;
-import org.hibernate.validator.remotemetamodel.impl.DefaultValidationConfiguration;
-import org.hibernate.validator.remotemetamodel.impl.InvalidJsonException;
-import org.hibernate.validator.remotemetamodel.impl.RemoteValidator;
+import org.hibernate.validator.remote.impl.Assert;
+import org.hibernate.validator.remote.validator.impl.ConstraintsViolationSerializer;
+import org.hibernate.validator.remote.validator.impl.DefaultValidationConfiguration;
+import org.hibernate.validator.remote.impl.InvalidJsonException;
+import org.hibernate.validator.remote.validator.impl.RemoteValidator;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
@@ -31,7 +31,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-import static org.hibernate.validator.remotemetamodel.impl.RemoteValidatorConstants.*;
+import static org.hibernate.validator.remote.impl.RemoteConstants.*;
 
 /**
  * @author Gunnar Morling
@@ -46,11 +46,11 @@ public class RemoteValidationServlet extends HttpServlet {
         this(new DefaultValidationConfiguration(), Validation.buildDefaultValidatorFactory().getValidator());
     }
 
-    public RemoteValidationServlet(final ValidationConfiguration configuration, final Validator validator) {
+    public RemoteValidationServlet(final RemoteValidationConfiguration configuration, final Validator validator) {
         this(configuration, validator, RemoteValidationServlet.class.getClassLoader());
     }
 
-    public RemoteValidationServlet(final ValidationConfiguration configuration, final Validator validator, final ClassLoader classLoader) {
+    public RemoteValidationServlet(final RemoteValidationConfiguration configuration, final Validator validator, final ClassLoader classLoader) {
         this.remoteValidator = new RemoteValidator(configuration, validator, classLoader);
         this.gson = new GsonBuilder().registerTypeHierarchyAdapter(ConstraintViolation.class, new ConstraintsViolationSerializer(configuration)).create();
     }

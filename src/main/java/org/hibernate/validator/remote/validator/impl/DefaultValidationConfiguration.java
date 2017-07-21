@@ -1,6 +1,6 @@
-package org.hibernate.validator.remotemetamodel.impl;
+package org.hibernate.validator.remote.validator.impl;
 
-import org.hibernate.validator.remotemetamodel.ValidationConfiguration;
+import org.hibernate.validator.remote.validator.RemoteValidationConfiguration;
 
 import java.lang.annotation.Annotation;
 import java.util.Collections;
@@ -11,7 +11,7 @@ import java.util.Map;
  * @author Hendrik Ebbers
  *
  */
-public class DefaultValidationConfiguration implements ValidationConfiguration {
+public class DefaultValidationConfiguration implements RemoteValidationConfiguration {
 
     @Override
     public boolean addViolationMessageToResponse() {
