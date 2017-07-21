@@ -72,37 +72,61 @@ public class RemoteMetamodelServlet extends HttpServlet {
             requestPayload.append(line);
         }
 
-        final JsonObject requestJson = new JsonParser().parse(requestPayload.toString()).getAsJsonObject();
+        try {
 
-        final String typeName = requestJson
-                .get(TYPE_PROPERTY_NAME)
-                .getAsJsonObject()
-                .get(IDENTIFIER_PROPERTY_NAME)
-                .getAsString();
+            final JsonObject requestJson = getAsJsonObject(requestPayload);
+            final String typeName = getType(requestJson);
 
-        final JsonObject properties = requestJson.get(INSTANCE_PROPERTY_NAME).getAsJsonObject();
-        final Map<String, Set<ConstraintViolation<?>>> violationsByProperty = new HashMap<>();
+            final JsonObject properties = requestJson.get(INSTANCE_PROPERTY_NAME).getAsJsonObject();
+            final Map<String, Set<ConstraintViolation<?>>> violationsByProperty = new HashMap<>();
 
-        properties.keySet().forEach(propertyName -> {
-            final JsonElement propertyElement = properties.get(propertyName);
-            try {
-                final Set<ConstraintViolation<?>> violations = validate(typeName, propertyName, propertyElement);
-                if(!violations.isEmpty()) {
-                    violationsByProperty.put(propertyName, violations);
+            properties.keySet().forEach(propertyName -> {
+                final JsonElement propertyElement = properties.get(propertyName);
+                try {
+                    final Set<ConstraintViolation<?>> violations = validate(typeName, propertyName, propertyElement);
+                    if (!violations.isEmpty()) {
+                        violationsByProperty.put(propertyName, violations);
+                    }
+                } catch (IllegalArgumentException e) {
+                    response.setStatus(BAD_REQUEST);
+                    throw new RuntimeException("Error in validation", e);
                 }
-            } catch (IllegalArgumentException e) {
-                response.setStatus(BAD_REQUEST);
-                throw new RuntimeException("Error in validation", e);
-            }
-        });
+            });
 
-        final String responseString = gson.toJson(violationsByProperty);
-        response.getWriter().append(responseString);
+            final String responseString = gson.toJson(violationsByProperty);
+            response.getWriter().append(responseString);
+        } catch (InvalidJsonException e) {
+            response.setStatus(BAD_REQUEST);
+            throw new RuntimeException("Error in validation. JSON can not be parsed", e);
+        }
+    }
+
+    private String getType(JsonObject requestJson) throws InvalidJsonException {
+        try {
+            return requestJson
+                    .get(TYPE_PROPERTY_NAME)
+                    .getAsJsonObject()
+                    .get(IDENTIFIER_PROPERTY_NAME)
+                    .getAsString();
+        } catch (Exception e) {
+            throw new InvalidJsonException("Can not parse type", e);
+        }
+    }
+
+    private JsonObject getAsJsonObject(StringBuilder requestPayload) throws InvalidJsonException {
+        try {
+            return new JsonParser().parse(requestPayload.toString()).getAsJsonObject();
+        } catch (Exception e) {
+            throw new InvalidJsonException("Can not parse JSON", e);
+        }
     }
 
     private Set<ConstraintViolation<?>> validate(final String typeName, final String propertyName, final JsonElement propertyElement) {
-        if (!propertyElement.isJsonPrimitive()) {
-            throw new IllegalArgumentException("Only primitive properties supported. Wrong type for " + typeName + "." + propertyName);
+        if (!propertyElement.isJsonPrimitive() && !propertyElement.isJsonNull()) {
+            throw new IllegalArgumentException("Only primitive or null properties supported. Wrong type for " + typeName + "." + propertyName);
+        }
+        if(propertyElement.isJsonNull()) {
+            return remoteValidator.validateValue(typeName, propertyName, null);
         }
         JsonPrimitive primitiveValue = propertyElement.getAsJsonPrimitive();
         if (primitiveValue.isBoolean()) {
