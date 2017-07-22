@@ -43,7 +43,11 @@ public class RemoteValidationServlet extends HttpServlet {
     private final Gson gson;
 
     public RemoteValidationServlet() {
-        this(new DefaultValidationConfiguration(), Validation.buildDefaultValidatorFactory().getValidator());
+        this(new DefaultValidationConfiguration());
+    }
+
+    public RemoteValidationServlet(final RemoteValidationConfiguration configuration) {
+        this(configuration, Validation.buildDefaultValidatorFactory().getValidator());
     }
 
     public RemoteValidationServlet(final RemoteValidationConfiguration configuration, final Validator validator) {
@@ -63,8 +67,11 @@ public class RemoteValidationServlet extends HttpServlet {
         try {
             final JsonObject requestJson = getAsJsonObject(payload);
             final String typeName = getType(requestJson);
-
-            final JsonObject properties = requestJson.get(INSTANCE_PROPERTY_NAME).getAsJsonObject();
+            final JsonElement propertiesElem = requestJson.get(INSTANCE_PROPERTY_NAME);
+            if(propertiesElem == null || !propertiesElem.isJsonObject()) {
+                throw new InvalidJsonException(INSTANCE_PROPERTY_NAME + " not defined");
+            }
+            final JsonObject properties = propertiesElem.getAsJsonObject();
             final Map<String, Set<ConstraintViolation<?>>> violationsByProperty = new HashMap<>();
 
             properties.keySet().forEach(propertyName -> {
